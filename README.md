@@ -106,11 +106,6 @@ Para generar las aplicaciones e instalarlas de forma independiente:
 eas build --platform android --profile preview
 ```
 
-**Paquete para Google Play Store (.aab):**
-```bash
-eas build --platform android --profile production
-```
-
 ---
 
 ## ⚠️ Nota Legal / Disclaimer
