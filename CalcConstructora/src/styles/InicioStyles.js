@@ -1,61 +1,69 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { Theme } from '../theme/theme'; // <--- IMPORTAMOS TUS TOKENS CENTRALIZADOS
 
 const { width } = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E272E',
-    justifyContent: 'center',
+    backgroundColor: Theme.colors.background, // Fondo negro puro centralizado
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 30,
+    paddingHorizontal: 30,
+    paddingTop: 100,
+    paddingBottom: 40,
   },
   contenedorLogotipo: {
     alignItems: 'center',
-    marginBottom: 60,
     width: '100%',
+    marginTop: 'auto',
+    marginBottom: 'auto',
   },
   lineaDecorativa: {
-    width: 40,
-    height: 4,
-    backgroundColor: '#F39C12',
+    width: 50,
+    height: 5,
+    backgroundColor: Theme.colors.primary, // Naranja de marca centralizado
     marginBottom: 20,
     borderRadius: 2,
   },
   tituloMasivo: {
-    fontSize: 32,
+    fontSize: Theme.typography.fontSizeHeading, // Tamaño masivo centralizado (34px)
     fontWeight: '900',
-    color: '#FFFFFF', // Blanco puro para el impacto principal
+    color: Theme.colors.text, // Blanco puro
     textAlign: 'center',
     letterSpacing: 2,
-    lineHeight: 38,
+    lineHeight: 40,
   },
   tituloDestacado: {
-    color: '#F39C12', // Amarillo técnico de acento
+    color: Theme.colors.primary, // Naranja de marca centralizado
   },
   subtituloTecnico: {
-    fontSize: 12,
-    color: '#7F8C8D',
+    fontSize: Theme.typography.fontSizeLabel, // 16px mínimos de legibilidad
+    color: Theme.colors.textMuted, // Gris claro accesible
     textAlign: 'center',
-    marginTop: 14,
+    marginTop: 16,
     fontWeight: '600',
-    letterSpacing: 3, // Efecto de tracking expandido estilo plano técnico
+    letterSpacing: 2,
     textTransform: 'uppercase',
   },
   botonAvanzado: {
-    borderWidth: 1.5,
-    borderColor: '#F39C12',
-    backgroundColor: 'transparent', // Fondo transparente minimalista
-    width: width * 0.75,
-    paddingVertical: 16,
-    borderRadius: 4, // Bordes sutiles y rectos, menos curvos
+    backgroundColor: Theme.colors.primary, // Fondo sólido brillante centralizado
+    width: width * 0.85,
+    height: 56, // Altura táctil ideal
+    borderRadius: Theme.roundness.small, // Radio de borde controlado
     alignItems: 'center',
     justifyContent: 'center',
+    // Sombras nativas
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   textoBoton: {
-    color: '#F39C12',
-    fontSize: 14,
-    fontWeight: '700',
+    color: Theme.colors.textDark, // Texto negro para contraste perfecto
+    fontSize: Theme.typography.fontSizeMain, // 18px para lectura rápida
+    fontWeight: '800',
     letterSpacing: 2,
   }
 });

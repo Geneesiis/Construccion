@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, TextInput, TouchableOpacity, ScrollView, Keyboard, Alert } from 'react-native';
+import { 
+  Text, 
+  View, 
+  Keyboard, 
+  Alert, 
+  ScrollView, 
+  KeyboardAvoidingView, 
+  Platform,
+  TouchableOpacity
+} from 'react-native';
 import styles from '../styles/CalculadoraStyles'; 
 import { guardarCalculo, obtenerHistorial } from '../database/DatabaseManager';
 import Historial from './Historial'; 
+import { Ionicons } from '@expo/vector-icons';
+import FormInput from './FormInput';
 
 const DOSIFICACION = {
   arena: 1.20,        
   gravilla: 1.00      
 };
 
-export default function Calculadora() {
+export default function Calculadora({ onCambiarPantalla }) {
   const [largo, setLargo] = useState('');
   const [ancho, setAncho] = useState('');
   const [espesor, setEspesor] = useState('');
@@ -36,7 +47,7 @@ export default function Calculadora() {
     const numSacos = parseFloat(sacosPorMetro);
 
     if (!numLargo || !numAncho || !numEspesor || !numSacos) {
-      Alert.alert('Atención', 'Por favor ingresa valores numéricos válidos en todos los campos para poder calcular.');
+      Alert.alert('Atención', 'Por favor ingresa valores numéricos válidos en todos los campos.');
       return; 
     }
 
@@ -69,114 +80,104 @@ export default function Calculadora() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.botonHamburguesa} onPress={() => setMenuAbierto(true)}>
-          <View style={styles.rayasHamburguesa} />
-          <View style={styles.rayasHamburguesa} />
-          <View style={styles.rayasHamburguesa} />
-        </TouchableOpacity>
-        <Text style={styles.titulo}>CALCULADORA CONSTRUCTORA</Text>
-        <Text style={styles.subtituloHeader}>Cálculo Profesional de Radier</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.seccionTitulo}>MEDIDAS DEL TERRENO</Text>
-        
-        <Text style={styles.label}>Largo de la superficie (metros):</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          placeholder="Ej: 6.00"
-          placeholderTextColor="#95A5A6"
-          value={largo}
-          onChangeText={setLargo}
-        />
-
-        <Text style={styles.label}>Ancho de la superficie (metros):</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          placeholder="Ej: 3.50"
-          placeholderTextColor="#95A5A6"
-          value={ancho}
-          onChangeText={setAncho}
-        />
-
-        <Text style={styles.label}>Espesor o alto (centímetros):</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          placeholder="Ej: 0.10 (10 cm = 0.10 m)"
-          placeholderTextColor="#95A5A6"
-          value={espesor}
-          onChangeText={setEspesor}
-        />
-
-        <View style={styles.separador} />
-
-        <Text style={styles.seccionTitulo}>DOSIFICACIÓN</Text>
-        <Text style={styles.label}>Sacos de cemento por m³:</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          value={sacosPorMetro}
-          onChangeText={setSacosPorMetro}
-        />
-
-        <View style={styles.contenedorBotones}>
-          <TouchableOpacity style={[styles.boton, styles.botonCalcular]} onPress={calcularMateriales}>
-            <Text style={styles.textoBoton}>CALCULAR</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.boton, styles.botonLimpiar]} onPress={limpiarCampos}>
-            <Text style={styles.textoBotonLimpiar}>LIMPIAR</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {resultados && (
-        <View style={styles.cardResultados}>
-          <Text style={styles.tituloResultados}>TOTAL DE MATERIALES</Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      style={{ flex: 1 }}
+    >
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        bounces={false}
+        showsVerticalScrollIndicator={true}
+      >
+        <View style={styles.internalContainer}>
           
-          <View style={styles.filaResultado}>
-            <Text style={styles.textoResultado}>Volumen de Mezcla:</Text>
-            <Text style={styles.destacado}>{resultados.volumen} m³</Text>
-          </View>
-          
-          <View style={styles.filaResultado}>
-            <Text style={styles.textoResultado}>Cemento (25 kg):</Text>
-            <Text style={styles.destacado}>{resultados.cemento} sacos</Text>
-          </View>
-
-          <View style={styles.filaResultado}>
-            <Text style={styles.textoResultado}>Arena Fina/Gruesa:</Text>
-            <Text style={styles.destacado}>{resultados.arena} m³</Text>
+          {/* HEADER */}
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.botonHamburguesa} onPress={() => setMenuAbierto(true)}>
+              <Ionicons name="menu-outline" size={32} color="#FF9F0A" />
+            </TouchableOpacity>
+            <View style={styles.contenedorTextosHeader}>
+              <Text style={styles.titulo}>CALCULADORA CONSTRUCTORA</Text>
+              <Text style={styles.subtituloHeader}>Cálculo Profesional de Radier</Text>
+            </View>
           </View>
 
-          <View style={styles.filaResultado}>
-            <Text style={styles.textoResultado}>Gravilla (Piedra):</Text>
-            <Text style={styles.destacado}>{resultados.gravilla} m³</Text>
+          {/* FORMULARIO LIMPIO CON COMPONENTES LEGO */}
+          <View style={styles.formularioContainer}>
+            <Text style={styles.seccionTitulo}>MEDIDAS DEL TERRENO (METROS)</Text>
+            
+            <View style={styles.filaInput}>
+              <View style={styles.columnaInput}>
+                <FormInput
+                  label="Largo:"
+                  placeholder="Ej: 6.00"
+                  value={largo}
+                  onChangeText={setLargo}
+                />
+              </View>
+              <View style={styles.columnaInput}>
+                <FormInput
+                  label="Ancho:"
+                  placeholder="Ej: 3.50"
+                  value={ancho}
+                  onChangeText={setAncho}
+                />
+              </View>
+            </View>
+
+            <View style={styles.filaInput}>
+              <View style={styles.columnaInput}>
+                <FormInput
+                  label="Espesor (Alto):"
+                  placeholder="Ej: 0.10"
+                  value={espesor}
+                  onChangeText={setEspesor}
+                />
+              </View>
+              <View style={styles.columnaInput}>
+                <FormInput
+                  label="Sacos / m³:"
+                  placeholder="Ej: 12.5"
+                  value={sacosPorMetro}
+                  onChangeText={setSacosPorMetro}
+                />
+              </View>
+            </View>
           </View>
 
-          {/* ======================================================= */}
-          {/* NOTA DE RESPONSABILIDAD DIRECTA Y DE TERRENO            */}
-          {/* ======================================================= */}
-          <View style={styles.contenedorNotaSeguridad}>
-            <Text style={styles.tituloNotaSeguridad}>¡OJO EN LA OBRA!</Text>
-            <Text style={styles.textoNotaSeguridad}>
-              Esta aplicación es solo una guía para ayudarte a cubicar. Los cálculos pueden fallar porque en terreno influye la humedad, los niveles y el desecho de material. El uso de estos números es bajo tu propio riesgo y NO nos hacemos responsables si falta o sobra material en la obra. ¡Revisa y mide bien antes de comprar!
-            </Text>
+          {/* RESULTADOS */}
+          {resultados && (
+            <View style={styles.cardResultados}>
+              <Text style={styles.tituloResultados}>TOTAL MATERIALES</Text>
+              <View style={styles.grillaResultados}>
+                <View style={styles.itemResultado}><Text style={styles.textoRes}>Vol: {resultados.volumen} m³</Text></View>
+                <View style={styles.itemResultado}><Text style={styles.textoRes}>Cem: {resultados.cemento} sacos</Text></View>
+                <View style={styles.itemResultado}><Text style={styles.textoRes}>Are: {resultados.arena} m³</Text></View>
+                <View style={styles.itemResultado}><Text style={styles.textoRes}>Gra: {resultados.gravilla} m³</Text></View>
+              </View>
+            </View>
+          )}
+
+          {/* BOTONES ANCLADOS ABAJO */}
+          <View style={styles.contenedorBotones}>
+            <TouchableOpacity style={[styles.boton, styles.botonCalcular]} onPress={calcularMateriales}>
+              <Text style={styles.textoBoton}>CALCULAR</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.boton, styles.botonLimpiar]} onPress={limpiarCampos}>
+              <Text style={styles.textoBotonLimpiar}>LIMPIAR</Text>
+            </TouchableOpacity>
           </View>
-          {/* ======================================================= */}
+
         </View>
-      )}
+      </ScrollView>
 
       <Historial 
         visible={menuAbierto} 
         onCerrar={() => setMenuAbierto(false)} 
         lista={historial} 
         onRefrescar={cargarHistorialDesdeBD} 
+        onCambiarPantalla={onCambiarPantalla}
       />
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
